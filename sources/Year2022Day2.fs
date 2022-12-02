@@ -20,21 +20,53 @@ type Outcome =
     | Draw = 3
     | Loss = 0
 
-let parseRound (input:string) = 
-    {
-        Opponent =  
-            match input[0] with
-            | 'A' -> Shape.Rock
-            | 'B' -> Shape.Paper
-            | 'C' -> Shape.Scissors
-            | _ -> failwith "Invalid Shape for opponent"
-        You = 
-            match input[2] with
-            | 'X' -> Shape.Rock
-            | 'Y' -> Shape.Paper
-            | 'Z' -> Shape.Scissors
-            | _ -> failwith "Invalid Shape for yourself"
-    }
+let parseRound1 (input:string) = 
+    let opponent = 
+        match input[0] with
+        | 'A' -> Shape.Rock
+        | 'B' -> Shape.Paper
+        | 'C' -> Shape.Scissors
+        | _ -> failwith "Invalid Shape for opponent"
+
+    let you = 
+        match input[2] with
+        | 'X' -> Shape.Rock
+        | 'Y' -> Shape.Paper
+        | 'Z' -> Shape.Scissors
+        | _ -> failwith "Invalid Shape for yourself"
+
+    { Opponent = opponent; You = you}
+
+let Loosing shape =
+    match shape with
+    | Shape.Rock -> Shape.Paper
+    | Shape.Paper -> Shape.Scissors
+    | Shape.Scissors -> Shape.Rock
+    | _ -> failwith "invalid shape"
+
+let Winning shape =
+    match shape with
+    | Shape.Rock -> Shape.Scissors
+    | Shape.Paper -> Shape.Rock
+    | Shape.Scissors -> Shape.Paper
+    | _ -> failwith "invalid shape"
+
+let parseRound2 (input:string) = 
+    let opponent = 
+        match input[0] with
+        | 'A' -> Shape.Rock
+        | 'B' -> Shape.Paper
+        | 'C' -> Shape.Scissors
+        | _ -> failwith "Invalid Shape for opponent"
+
+    let you = 
+        match input[2] with
+        | 'X' -> opponent |> Winning
+        | 'Y' -> opponent
+        | 'Z' -> opponent |> Loosing
+        | _ -> failwith "Invalid Shape for yourself"
+
+    { Opponent = opponent; You = you}
 
 let getScore round =
     let outcome=
@@ -51,4 +83,8 @@ let getScore round =
 
 let SolveDay2Part1 = 
     inputs
-    |> Seq.sumBy (fun line -> line |> parseRound |> getScore)
+    |> Seq.sumBy (fun line -> line |> parseRound1 |> getScore)
+
+let SolveDay2Part2 = 
+    inputs
+    |> Seq.sumBy (fun line -> line |> parseRound2 |> getScore)
