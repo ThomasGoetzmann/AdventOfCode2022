@@ -9,7 +9,9 @@ let inputs =
     |> Array.map (fun line -> line.ToCharArray())
 
 let findSameItemTypeInCompartments rucksack=
-    let (firstCompartment, secondCompartment) = rucksack |> Array.splitAt (rucksack.Length / 2)
+    let firstCompartment, secondCompartment = 
+        rucksack 
+        |> Array.splitAt (rucksack.Length / 2)
     
     firstCompartment 
     |> Seq.find (fun x -> secondCompartment |> Seq.exists(fun y -> x = y))
