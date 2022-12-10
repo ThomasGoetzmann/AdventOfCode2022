@@ -1,21 +1,19 @@
-﻿open Year2022Day1
-open Year2022Day2
-open Year2022Day3
-open Year2022Day4
-open Year2022Day5
+﻿printfn "Welcome to Thomas GOETZMANN solutions to AdventOfCode2022"
 
-printfn "Hello from F#"
-printfn "Day 1 part 1 solution is %i" SolveDay1Part1
-printfn "Day 1 part 2 solution is %i" SolveDay1Part2
+printfn "Day 1 part 1 solution is %i" Year2022Day1.part1
+printfn "Day 1 part 2 solution is %i" Year2022Day1.part2
 
-printfn "Day 2 part 1 solution is %i" SolveDay2Part1
-printfn "Day 2 part 2 solution is %i" SolveDay2Part2
+printfn "Day 2 part 1 solution is %i" Year2022Day2.part1
+printfn "Day 2 part 2 solution is %i" Year2022Day2.part2
 
-printfn "Day 3 part 1 solution is %i" SolveDay3Part1
-printfn "Day 3 part 2 solution is %i" SolveDay3Part2
+printfn "Day 3 part 1 solution is %i" Year2022Day3.part1
+printfn "Day 3 part 2 solution is %i" Year2022Day3.part2
 
-printfn "Day 4 part 1 solution is %i" SolveDay4Part1
-printfn "Day 4 part 2 solution is %i" SolveDay4Part2
+printfn "Day 4 part 1 solution is %i" Year2022Day4.part1
+printfn "Day 4 part 2 solution is %i" Year2022Day4.part2
 
-printfn "Day 5 part 1 solution is %A" SolveDay5Part1
-printfn "Day 5 part 2 solution is %A" SolveDay5Part2
+printfn "Day 5 part 1 solution is %A" Year2022Day5.part1
+printfn "Day 5 part 2 solution is %A" Year2022Day5.part2
+
+printfn "Day 6 part 1 solution is %A" Year2022Day6.part1
+printfn "Day 6 part 2 solution is %A" Year2022Day6.part2
