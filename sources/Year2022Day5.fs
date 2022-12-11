@@ -1,8 +1,6 @@
 module Year2022Day5
     open System.IO
-    open System
     open System.Text.RegularExpressions
-    open System.Collections.Generic
 
     let inputs =
         File.ReadAllLines("inputs/day5.txt") |> List.ofSeq
@@ -46,8 +44,10 @@ module Year2022Day5
 
     let parseMoves moves = 
         let parseLine line =
-            let m = Regex.Match(line, "move (\d+) from (\d+) to (\d+)")
-            { Amount = (int)m.Groups[1].Value; From = (int)m.Groups[2].Value; To = (int)m.Groups[3].Value }
+            let m = Regex.Match(line, "move (?<amount>\d+) from (?<from>\d+) to (?<to>\d+)")
+            { Amount = (int)m.Groups["amount"].Value; 
+                From = (int)m.Groups["from"].Value; 
+                To = (int)m.Groups["to"].Value }
 
         moves |> List.map parseLine
 
