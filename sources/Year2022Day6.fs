@@ -5,13 +5,11 @@ module Year2022Day6
         File.ReadAllText("inputs/day6.txt") 
         |> List.ofSeq
     
-    let add x y = x + y
-
     let analyze size input  =
         input 
         |> List.windowed size
         |> List.findIndex (fun x -> (x |> List.distinct |> List.length) = size)
-        |> add size
+        |> (+) size
 
     let packet = 4
     let message = 14
