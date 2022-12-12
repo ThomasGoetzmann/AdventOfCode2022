@@ -5,18 +5,11 @@ open System.Text.RegularExpressions
 
 let inputs = File.ReadAllLines("inputs/day9.txt") |> List.ofSeq
 
-type Position = { X: int; Y: int }
-
-type Rope = 
-    { Head: Position; 
-      Tail: Position; }
-      member this.Vector() = this.Head.X - this.Tail.X, this.Head.Y - this.Tail.Y
-
 type Direction =
-    | Up of int
-    | Down of int
-    | Left of int
-    | Right of int
+    | Up
+    | Down
+    | Left
+    | Right
 
 let parse line =
     let m =
@@ -26,54 +19,51 @@ let parse line =
     let number = (m.Groups["number"].Value |> int)
 
     match m.Groups["direction"].Value with
-    | "U" -> Up number
-    | "L" -> Left number
-    | "R" -> Right number
-    | "D" -> Down number
+    | "U" -> Up |> List.replicate number
+    | "L" -> Left |> List.replicate number
+    | "R" -> Right |> List.replicate number
+    | "D" -> Down |> List.replicate number
     | _ -> failwith "Invalid input"
 
-let apply move position =
+let moveHead move position =
+    let x, y = position
     match move with
-    | Up (nb) -> { position with Y = position.Y + nb }
-    | Down (nb) -> { position with Y = position.Y - nb }
-    | Left (nb) -> { position with X = position.X - nb }
-    | Right (nb) -> { position with X = position.X + nb }
+    | Up -> x , y + 1
+    | Down -> x , y - 1
+    | Left -> x - 1, y
+    | Right -> x + 1, y
 
-let applyTailfollowing rope = 
-    let rec applyMove1 acc (r:Rope) =
-        match r.Vector() with
-        | x , y when x < -1 -> 
-            let n = { r.Head with X = r.Tail.X - 1 } 
-            applyMove1 (n::acc) {Head = r.Head; Tail = n}
-        | x , y when x > 1 -> 
-            let n = { r.Head with X = r.Tail.X + 1 } 
-            applyMove1 (n::acc) {Head = r.Head; Tail = n}
-        | x , y when y < -1 -> 
-            let n = { r.Head with Y = r.Tail.Y - 1 } 
-            applyMove1 (n::acc) {Head = r.Head; Tail = n}
-        | x , y when y > 1 -> 
-            let n = { r.Head with Y = r.Tail.Y + 1 } 
-            applyMove1 (n::acc) {Head = r.Head; Tail = n}
-        | _ ->  acc
+let moveTail pos1 pos2 =
+    let x1, y1 = pos1
+    let x2, y2 = pos2
+    let xdiff, ydiff = x1 - x2 , y1 - y2
     
-    applyMove1 [] rope
+    match xdiff, ydiff with
+    | 2 , _ -> x2 + 1, y1
+    | -2 , _ -> x2 - 1, y1
+    | _ , 2 -> x1, y2 + 1
+    | _ , -2 -> x1, y2 - 1
+    | _ -> pos2
+
+let applyMoves moves = 
+    let rec applyMove acc head tail moves =
+        match moves with
+        | m :: ms -> 
+            let newHead = head |> moveHead m
+            let newTail = moveTail newHead tail
+            applyMove (newTail::acc) newHead newTail ms
+        | [] -> acc
+    
+    applyMove [0,0] (0,0) (0,0) moves
 
 let part1 =
-    let Rope = {  Head = { X = 0; Y = 0 } ; Tail = { X = 0; Y = 0 } }
+    inputs 
+    |> List.collect parse
+    |> applyMoves
+    |> List.distinct
+    |> List.length
 
-    ((Rope, [{X =0; Y = 0}]), inputs |> List.map parse)
-    ||> Seq.fold (fun (rope, positions) move ->
-        let newHead = rope.Head |> apply move
-        let newTails = { rope with Head = newHead } |> applyTailfollowing
-
-        if newTails = [] 
-        then { Head = newHead; Tail = rope.Tail }, positions
-        else { Head = newHead; Tail = newTails.Head }, positions |> List.append newTails
-        
-    )
-    |> snd
-    |> Seq.distinct
-    |> Seq.length
-//probably some fold or reduce or mapFold ...
-
-let part2 = 0
+let part2 = 
+    inputs 
+    |> List.collect parse
+    |> applyMoves
