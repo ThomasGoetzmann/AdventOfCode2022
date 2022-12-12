@@ -12,10 +12,6 @@ module Year2022Day8
         |> List.ofSeq
         |> List.map (fun x -> x |> List.ofSeq |> List.map (fun c -> {Size = c |> int |> (+) -48; Visible=false; ScenicScore = 0}))
     
-    let makeVisible tree = {Size = tree.Size; Visible = true; ScenicScore = tree.ScenicScore}
-
-    let withScenicScore score tree = {Size = tree.Size; Visible = tree.Visible; ScenicScore = score}
-
     let isOnEdge index = index = 0 || index = 98
 
     let isVisibleFromAny treeLists tree =
@@ -26,17 +22,17 @@ module Year2022Day8
         array
         |> List.mapi (fun i treeRow -> 
             if i |> isOnEdge
-            then treeRow |> List.map makeVisible
+            then treeRow |> List.map (fun tree -> {tree with Visible = true})
             else
                 treeRow |> List.mapi (fun j tree ->
                     if j |> isOnEdge 
-                    then makeVisible tree
+                    then {tree with Visible = true}
                     else 
                         let left, right = treeRow |> List.splitAt j                        
                         let top, bottom = array |> List.map (fun treeRow -> treeRow[j]) |> List.splitAt i
                         
                         if tree |> isVisibleFromAny [left; right.Tail; top; bottom.Tail]
-                        then makeVisible tree
+                        then {tree with Visible = true}
                         else tree
                 )
         )
@@ -56,17 +52,17 @@ module Year2022Day8
         array 
         |> List.mapi (fun i treeRow ->
             if i |> isOnEdge
-            then treeRow |> List.map (withScenicScore 0)
+            then treeRow |> List.map (fun tree -> {tree with ScenicScore = 0})
             else
                 treeRow |> List.mapi (fun j tree -> 
                     if j |> isOnEdge
-                    then tree |> withScenicScore 0
+                    then {tree with ScenicScore = 0 }
                     else
                         let left, right = treeRow |> List.splitAt j
                         let top, bottom = array |> List.map (fun treeRow -> treeRow[j]) |> List.splitAt i
 
                         let directions = [left |> List.rev; right.Tail; top |> List.rev; bottom.Tail]
-                        tree |> withScenicScore (tree |> scenicScore directions)
+                        {tree with ScenicScore = tree |> scenicScore directions}
                 )
         )
 
