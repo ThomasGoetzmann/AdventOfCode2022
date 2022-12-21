@@ -33,3 +33,5 @@ printfn "Day 10 part 2 solution is
 which might be hard to read depending on your console font.
 So here's the solution: BGKAEREZ" Year2022Day10.part2
 
+printfn "Day 11 part 1 solution is %A" Year2022Day11.part1
+printfn "Day 11 part 2 solution is %A" Year2022Day11.part2
