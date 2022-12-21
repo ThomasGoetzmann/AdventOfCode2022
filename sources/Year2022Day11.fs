@@ -35,7 +35,7 @@ type Monkey =
       Items: int64 List
       Operation: Operation
       Test: Test
-      Inspected: int }
+      Inspected: int64 }
 
 let parseNumber line =
     Regex.Match(line, "Monkey (?<number>\d):").Groups["number"]
@@ -114,46 +114,59 @@ let inspect m =
     | Add ->  v1 + v2
     | Multiply -> v1 * v2
 
-let bored worryLevel =
-    (worryLevel |> double) / 3.0 |> floor |> int64
-
 let monkeyToThrowAt test (worryLevel:int64) =
     if worryLevel % (test.DivisibleBy |> int64) = 0 
     then test.TrueTarget
     else test.FalseTarget
 
-let rec applyTurn monkeys index =
+let rec applyTurn reduceWorries monkeys index =
     let monkey = monkeys |> List.item index
 
     match monkey.Items with
     | _ :: items ->
-        let newItem = monkey |> inspect |> bored
+        let newItem = monkey |> inspect |> reduceWorries
         let targetMonkey = newItem |> monkeyToThrowAt monkey.Test
         let updatedMonkeys = 
             monkeys
             |> List.mapi (fun i m -> 
                 match i with
-                | x when x = index -> { m with Inspected = m.Inspected + 1; Items = items }
+                | x when x = index -> { m with Inspected = m.Inspected + 1L; Items = items }
                 | x when x = targetMonkey -> { m with Items = m.Items @ [newItem] }
                 | _ -> m)
 
-        applyTurn updatedMonkeys index
+        applyTurn reduceWorries updatedMonkeys index
     | [] -> monkeys
 
-let rec applyRounds x monkeys =
+let rec applyRounds reduceWorries x monkeys =
     if x > 0 then
-        let monkeysAfterRound = (monkeys, [0..7]) ||> List.fold applyTurn
-        applyRounds (x - 1) monkeysAfterRound
+        let monkeysAfterRound = (monkeys, [0..7]) ||> List.fold (fun acc x -> applyTurn reduceWorries acc x)
+        applyRounds reduceWorries (x - 1) monkeysAfterRound
     else
         monkeys
 
 let part1 =
+    let reduceWorries x = x / 3L
+    
     inputs
     |> List.map parse
-    |> applyRounds 20
+    |> applyRounds reduceWorries 20
     |> List.sortByDescending (fun m -> m.Inspected)
     |> List.take 2
     |> List.map (fun m -> m.Inspected)
     |> List.reduce (*)
     
-let part2 = 0
+let part2 = 
+    let parsedInputs = 
+        inputs 
+        |> List.map parse
+    
+    let reduceWorries x = 
+        let gcd = parsedInputs|> List.map (fun m -> m.Test.DivisibleBy) |> List.reduce (*)
+        x % gcd
+    
+    parsedInputs
+    |> applyRounds reduceWorries 10_000
+    |> List.sortByDescending (fun m -> m.Inspected)
+    |> List.take 2
+    |> List.map (fun m -> m.Inspected)
+    |> List.reduce (*)
