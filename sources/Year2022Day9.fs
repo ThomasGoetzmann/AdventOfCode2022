@@ -27,65 +27,61 @@ let parse line =
 
 let apply move position =
     let x, y = position
+
     match move with
-    | Up -> x , y + 1
-    | Down -> x , y - 1
+    | Up -> x, y + 1
+    | Down -> x, y - 1
     | Left -> x - 1, y
     | Right -> x + 1, y
 
-let follow pos1 pos2 =
-    let x1, y1 = pos1
-    let x2, y2 = pos2
-    let xdiff, ydiff = x1 - x2 , y1 - y2
-    
-    match xdiff, ydiff with
-    | 2 , 2 ->  x2 + 1, y2 + 1
-    | 2 , -2 -> x2 + 1, y2 - 1
-    | -2 , 2 -> x2 - 1, y2 + 1
-    | -2 , -2 -> x2 - 1, y2 - 1
-    | 2 , _ -> x2 + 1, y1
-    | -2 , _ -> x2 - 1, y1
-    | _ , 2 -> x1, y2 + 1
-    | _ , -2 -> x1, y2 - 1
-    | _ -> pos2
+let follow head tail =
+    let xh, yh = head
+    let xt, yt = tail
+    let xdiff, ydiff = xh - xt, yh - yt
 
-let rec applyMoves a rope moves =
-    
-    let applyMove rope move  = 
-    
+    match xdiff, ydiff with
+    | 2, 2 -> xt + 1, yt + 1
+    | 2, -2 -> xt + 1, yt - 1
+    | -2, 2 -> xt - 1, yt + 1
+    | -2, -2 -> xt - 1, yt - 1
+
+    | 2, _ -> xt + 1, yh
+    | -2, _ -> xt - 1, yh
+
+    | _, 2 -> xh, yt + 1
+    | _, -2 -> xh, yt - 1
+
+    | _ -> tail
+
+let rec applyMoves acc rope moves =
+    let applyMove rope move =
         let rec followRope acc knots =
             match knots with
-            | k::ks -> 
-                let movedKnot = k |> follow (acc |> List.head)
-                followRope (movedKnot::acc) ks
+            | knot :: remainingKnots ->
+                let movedKnot = knot |> follow (acc |> List.head)
+                followRope (movedKnot :: acc) remainingKnots
             | [] -> acc |> List.rev
-        
+
         let newHead = (rope |> List.head) |> apply move
-        followRope [newHead] rope.Tail
+        followRope [ newHead ] rope.Tail
 
-    match moves with 
-    | m::ms -> 
-        let newRope = applyMove rope m
-        applyMoves (newRope::a) newRope ms
-    | [] -> a |> List.rev
+    match moves with
+    | move :: remainingMove ->
+        let newRope = applyMove rope move
+        applyMoves (newRope :: acc) newRope remainingMove
+    | [] -> acc |> List.rev
 
+let solve ropeSize =
+    let knot = (0, 0) 
+    let rope = knot |> List.replicate ropeSize
 
-let part1 =
-    let rope = (0,0) |> List.replicate 2
-    
-    inputs 
+    inputs
     |> List.collect parse
-    |> applyMoves [rope] rope
-    |> List.map (fun rope -> rope |> List.last)
+    |> applyMoves [ rope ] rope
+    |> List.map List.last
     |> List.distinct
     |> List.length
 
-let part2 = 
-    let rope = (0,0) |> List.replicate 10
-    
-    inputs 
-    |> List.collect parse
-    |> applyMoves [rope] rope
-    |> List.map (fun rope -> rope |> List.last)
-    |> List.distinct
-    |> List.length
+let part1 = solve 2
+
+let part2 = solve 10
