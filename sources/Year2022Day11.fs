@@ -7,7 +7,7 @@ let newline = System.Environment.NewLine
 
 let inputs =
     File
-        .ReadAllText("inputs/day11test.txt")
+        .ReadAllText("inputs/day11.txt")
         .Split(newline + newline)
     |> List.ofArray
     |> List.map (fun monkeyInfo -> monkeyInfo.Split(newline) |> List.ofArray)
@@ -26,13 +26,13 @@ type Operation =
       Value2: OperationValue }
 
 type Test =
-    { DivisibleBy: int
+    { DivisibleBy: int64
       TrueTarget: int
       FalseTarget: int }
 
 type Monkey =
     { Number: int
-      Items: int List
+      Items: int64 List
       Operation: Operation
       Test: Test
       Inspected: int }
@@ -49,7 +49,7 @@ let removeSubString (substring: string) (s: string) =
 let parseItems (line: string) =
     let items = line |> removeSubString "Starting items: "
 
-    items.Split(", ") |> Array.map int |> List.ofArray
+    items.Split(", ") |> Array.map int64 |> List.ofArray
 
 let (|Integer|_|) (str: string) =
     let mutable intvalue = 0
@@ -84,7 +84,7 @@ let parseTest (lines: string list) =
         lines
         |> List.head
         |> removeSubString "Test: divisible by "
-        |> int
+        |> int64
       TrueTarget =
         lines[1]
         |> removeSubString "If true: throw to monkey "
@@ -104,23 +104,23 @@ let parse monkeyInfo =
 let getValue old operationValue =
     match operationValue with
     | Old -> old
-    | Value v -> v
+    | Value v -> v |> int64
 
 let inspect m =
-    let v1 = m.Operation.Value1 |> getValue m.Items[0]
-    let v2 = m.Operation.Value2 |> getValue m.Items[0]
+    let v1 = m.Operation.Value1 |> getValue (m.Items |> List.head)
+    let v2 = m.Operation.Value2 |> getValue (m.Items |> List.head)
     
     match m.Operation.Operator with
     | Add ->  v1 + v2
     | Multiply -> v1 * v2
 
 let bored worryLevel =
-    (worryLevel |> double) / 3.0 |> floor |> int
+    (worryLevel |> double) / 3.0 |> floor |> int64
 
-let monkeyToThrowAt test worryLevel =
-    match worryLevel % test.DivisibleBy with
-    | 0 -> test.TrueTarget
-    | _ -> test.FalseTarget
+let monkeyToThrowAt test (worryLevel:int64) =
+    if worryLevel % (test.DivisibleBy |> int64) = 0 
+    then test.TrueTarget
+    else test.FalseTarget
 
 let rec applyTurn monkeys index =
     let monkey = monkeys |> List.item index
@@ -133,7 +133,7 @@ let rec applyTurn monkeys index =
             monkeys
             |> List.mapi (fun i m -> 
                 match i with
-                | x when x = index -> { m with Inspected = monkey.Inspected + 1; Items = items }
+                | x when x = index -> { m with Inspected = m.Inspected + 1; Items = items }
                 | x when x = targetMonkey -> { m with Items = m.Items @ [newItem] }
                 | _ -> m)
 
@@ -141,11 +141,8 @@ let rec applyTurn monkeys index =
     | [] -> monkeys
 
 let rec applyRounds x monkeys =
-    let monkeyNums =  monkeys |> List.map (fun m -> m.Number)
-    
     if x > 0 then
-        
-        let monkeysAfterRound = (monkeys, monkeyNums) ||> List.fold applyTurn
+        let monkeysAfterRound = (monkeys, [0..7]) ||> List.fold applyTurn
         applyRounds (x - 1) monkeysAfterRound
     else
         monkeys
@@ -158,5 +155,5 @@ let part1 =
     |> List.take 2
     |> List.map (fun m -> m.Inspected)
     |> List.reduce (*)
-
+    
 let part2 = 0
