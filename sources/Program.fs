@@ -28,4 +28,8 @@ printfn "Day 9 part 1 solution is %A" Year2022Day9.part1
 printfn "Day 9 part 2 solution is %A" Year2022Day9.part2
 
 printfn "Day 10 part 1 solution is %A" Year2022Day10.part1
-printfn "Day 10 part 2 solution is %A" Year2022Day10.part2
+printfn "Day 10 part 2 solution is 
+%A 
+which might be hard to read depending on your console font.
+So here's the solution: BGKAEREZ" Year2022Day10.part2
+

@@ -72,7 +72,7 @@ let rec applyMoves acc rope moves =
     | [] -> acc |> List.rev
 
 let solve ropeSize =
-    let knot = (0, 0) 
+    let knot = (0, 0)
     let rope = knot |> List.replicate ropeSize
 
     inputs
