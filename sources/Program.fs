@@ -35,3 +35,9 @@ So here's the solution: BGKAEREZ" Year2022Day10.part2
 
 printfn "Day 11 part 1 solution is %A" Year2022Day11.part1
 printfn "Day 11 part 2 solution is %A" Year2022Day11.part2
+
+printfn "Day 12 part 1 solution is %A" Year2022Day12.part1
+printfn "Day 12 part 2 solution is %A" Year2022Day12.part2
+
+printfn "Day 13 part 1 solution is %A" Year2022Day13.part1
+printfn "Day 13 part 2 solution is %A" Year2022Day13.part2
