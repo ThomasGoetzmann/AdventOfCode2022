@@ -41,3 +41,6 @@ printfn "Day 11 part 2 solution is %A" Year2022Day11.part2
 
 printfn "Day 13 part 1 solution is %A" Year2022Day13.part1
 printfn "Day 13 part 2 solution is %A" Year2022Day13.part2
+
+printfn "Day 14 part 1 solution is %A" Year2022Day14.part1
+printfn "Day 14 part 2 solution is %A" Year2022Day14.part2
