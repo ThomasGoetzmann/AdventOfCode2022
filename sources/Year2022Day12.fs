@@ -7,9 +7,5 @@ let inputs =
     |> List.ofSeq 
     |> List.map (fun x -> x |> List.ofSeq)
 
-let part1 = 
-    inputs 
-    
-
-
+let part1 = 0
 let part2 = 0
