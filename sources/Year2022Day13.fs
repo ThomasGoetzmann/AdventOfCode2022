@@ -42,26 +42,44 @@ let parsedInputs =
         let split = pair.Split(newline)
         parseLine split[0], parseLine split[1])
 
-let rec hasRightOrder left right =
+let rec comparer left right =
     match left, right with
-    | Number l, Number r -> if l = r then None else Some(l < r)
+    | Number l, Number r -> 
+        if l = r then 0 
+        elif l < r then -1
+        else 1
     | List (l1 :: ls), List (r1 :: rs) ->
-        match hasRightOrder l1 r1 with
-        | Some isRightOrder -> Some isRightOrder
-        | None -> hasRightOrder (List ls) (List rs)
-    | Number l, List r -> hasRightOrder (List [ Number l ]) (List r)
-    | List l, Number r -> hasRightOrder (List l) (List [ Number r ])
-    | List [], List [] -> None
-    | List [], r -> Some true
-    | l, List [] -> Some false
+        match comparer l1 r1 with
+        | 0 -> comparer (List ls) (List rs)
+        | isRightOrder -> isRightOrder
+    | Number l, List r -> comparer (List [ Number l ]) (List r)
+    | List l, Number r -> comparer (List l) (List [ Number r ])
+    | List [], List [] -> 0
+    | List [], r -> -1
+    | l, List [] -> 1
 
 let part1 =
     parsedInputs
     |> List.mapi (fun i (left, right) ->
-        match hasRightOrder left right with
-        | Some x -> if x then i + 1 else 0
-        | None -> 0)
+        match comparer left right with
+        | -1 -> i + 1
+        | _ -> 0)
     |> List.sum
 
+let divider x =
+    List [List [Number x]]
 
-let part2 = 0
+let part2 =
+    let d2 = divider 2
+    let d6 = divider 6
+
+    let orderedPackets = 
+        parsedInputs
+        |> List.collect (fun (left,right) -> [left; right])
+        |> List.append [d2; d6]
+        |> List.sortWith comparer
+
+    let indexD2 = orderedPackets |> List.findIndex (fun packet -> packet = d2)
+    let indexD6 = orderedPackets |> List.findIndex (fun packet -> packet = d6)
+
+    (indexD2 + 1) * (indexD6 + 1)
