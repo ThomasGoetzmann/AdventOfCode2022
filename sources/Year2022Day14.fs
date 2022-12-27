@@ -26,28 +26,25 @@ let draw path =
     |> List.map drawPoints
     |> List.collect id
 
-let drizzleSandOver rocks =
+let drizzleSandOver rocks fallsEndlessly hitBottom =
     let initialPosition = 500, 0
-    let bottom = rocks |> List.maxBy snd |> snd
 
-    let rec drizzle (x, y) occupied =
-        if y > bottom then
-            None
-        elif occupied |> List.contains (x, y + 1) |> not then
-            drizzle (x, y + 1) occupied
-        elif occupied |> List.contains (x - 1, y + 1) |> not then
-            drizzle (x - 1, y + 1) occupied
-        elif occupied |> List.contains (x + 1, y + 1) |> not then
-            drizzle (x + 1, y + 1) occupied
-        else
-            Some(x, y)
+    let rec drizzle occupied sandPath = 
+        match sandPath with
+        | p::_ when fallsEndlessly p ->  None, []
+        | p::rest when hitBottom p -> Some p, rest
+        | (x, y) ::_ when not (occupied |> Seq.contains (x, y+1) ) -> drizzle occupied ((x, y + 1)::sandPath)
+        | (x, y) ::_ when not (occupied |> Seq.contains (x-1, y+1) ) -> drizzle occupied ((x - 1, y + 1) ::sandPath)
+        | (x, y) ::_ when not (occupied |> Seq.contains (x+1, y+1) ) -> drizzle occupied ((x + 1, y + 1) ::sandPath)
+        | (x, y) ::rest  -> Some (x,y), rest
+        | [] -> None, []
 
-    let rec makeItRainOver rocksAndSands =
-        match rocksAndSands |> drizzle initialPosition with
-        | Some sand -> makeItRainOver (sand :: rocksAndSands)
-        | None -> rocksAndSands
+    let rec makeItRainOver rocksAndSands sandPath =
+        match drizzle rocksAndSands sandPath with
+        | Some sand, p -> makeItRainOver (sand :: rocksAndSands) p
+        | _ -> rocksAndSands
 
-    makeItRainOver rocks
+    makeItRainOver rocks [initialPosition]
 
 let part1 =
     let rocks =
@@ -58,9 +55,31 @@ let part1 =
         |> List.collect id
         |> List.distinct
 
-    let rocksAndSands = drizzleSandOver rocks
+    let hitBottom (x,y) = false
+    let fallsEndlessly (x,y) = 
+        let bottom = rocks |> List.maxBy snd |> snd
+        y > bottom
+    
+    let rocksAndSands = drizzleSandOver rocks fallsEndlessly hitBottom
 
-    (rocksAndSands |> List.length)
-    - (rocks |> List.length)
+    (rocksAndSands |> Seq.length)
+    - (rocks |> Seq.length)
 
-let part2 = 0
+let part2 =
+    let rocks =
+        inputs
+        |> List.ofArray
+        |> List.map parse
+        |> List.map draw
+        |> List.collect id
+        |> List.distinct
+
+    let fallsEndlessly (x,y) = false
+    let hitBottom (x,y) = 
+        let bottom = (rocks |> Seq.maxBy snd |> snd) + 2
+        y + 1 = bottom
+
+    let rocksAndSands = drizzleSandOver rocks fallsEndlessly hitBottom
+
+    (rocksAndSands |> Seq.length)
+    - (rocks |> Seq.length)

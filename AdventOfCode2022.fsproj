@@ -10,4 +10,7 @@
     <Compile Include="sources/Year2022*.fs" />
     <Compile Include="sources/Program.fs" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharpPlus" Version="1.3.2" />
+  </ItemGroup>
 </Project>
