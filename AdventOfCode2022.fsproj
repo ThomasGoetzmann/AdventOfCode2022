@@ -7,7 +7,21 @@
     <Content Include="inputs/*.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Compile Include="sources/Year2022*.fs" />
+    <Compile Include="sources/Year2022Day15.fs" />
+    <Compile Include="sources/Year2022Day14.fs" />
+    <Compile Include="sources/Year2022Day13.fs" />
+    <Compile Include="sources/Year2022Day12.fs" />
+    <Compile Include="sources/Year2022Day11.fs" />
+    <Compile Include="sources/Year2022Day10.fs" />
+    <Compile Include="sources/Year2022Day9.fs" />
+    <Compile Include="sources/Year2022Day8.fs" />
+    <Compile Include="sources/Year2022Day7.fs" />
+    <Compile Include="sources/Year2022Day6.fs" />
+    <Compile Include="sources/Year2022Day5.fs" />
+    <Compile Include="sources/Year2022Day4.fs" />
+    <Compile Include="sources/Year2022Day3.fs" />
+    <Compile Include="sources/Year2022Day2.fs" />
+    <Compile Include="sources/Year2022Day1.fs" />
     <Compile Include="sources/Program.fs" />
   </ItemGroup>
   <ItemGroup>
